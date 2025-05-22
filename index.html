@@ -1,111 +1,43 @@
-
 <!DOCTYPE html>
 <html lang="no">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Støy og vibrasjonsassistent</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="manifest" href="manifest.json">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" />
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white transition duration-300">
-  <div class="max-w-4xl mx-auto p-6">
-    <header class="flex justify-between items-center mb-8">
+  <div class="max-w-4xl mx-auto p-4">
+    <header class="flex justify-between items-center mb-6">
       <div class="flex items-center gap-4">
-        <img src="icon-192.png" alt="App ikon" class="h-12">
-        <h1 class="text-3xl font-extrabold">Støy og vibrasjonsassistent</h1>
+        <img src="bravida logo-400x119.png" alt="Bravida Logo" class="h-12" />
+        <h1 class="text-3xl font-bold">Støy og vibrasjonsassistent</h1>
+      </div>
+      <div class="flex gap-2">
+        <select id="language" onchange="setLanguage(this.value)" class="border rounded p-1 bg-white dark:bg-gray-700 dark:text-white">
+          <option value="no">🇳🇴</option>
+          <option value="se">🇸🇪</option>
+          <option value="dk">🇩🇰</option>
+          <option value="fi">🇫🇮</option>
+          <option value="en">🇬🇧</option>
+          <option value="pl">🇵🇱</option>
+        </select>
       </div>
     </header>
-    <div class="grid gap-4">
-      <select id="brand" class="w-full p-3 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600">
-        <option value="">Velg merke</option>
-      </select>
-      <select id="model" class="w-full p-3 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600">
-        <option value="">Velg modell</option>
-      </select>
-      <input type="number" id="usage" class="w-full p-3 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600" placeholder="Brukstid (minutter)">
-      <button onclick="calculateExposure()" class="px-4 py-2 bg-blue-600 text-white rounded">Beregn</button>
-      <div id="result" class="p-4 bg-white dark:bg-gray-800 border rounded shadow mt-4"></div>
-      <h2 class="text-xl font-semibold mt-6">Historikk</h2>
-      <ul id="history" class="space-y-2 text-sm"></ul>
-    </div>
+    <main id="app">
+      <!-- App content will be injected here -->
+      <p>🛠️ Denne versjonen er under oppdatering. Full funksjon og visuelle effekter legges inn nå.</p>
+    </main>
   </div>
-
   <script>
-    const data = {"Milwaukee": [{"Model": "M18 FDDS", "Støy": "106,78 dB", "Vibrasjon": "1,85 m/s2"}, {"Model": "M18 FBS85", "Støy": "93,63 dB", "Vibrasjon": "1,5 m/s2"}, {"Model": "M18 CAG125XPDB", "Støy": "93,6 dB", "Vibrasjon": "4,79 m/s2"}, {"Model": "M18 FMS254", "Støy": "101,5 dB", "Vibrasjon": ""}, {"Model": "M18 FH-OX", "Støy": "103,6 dB", "Vibrasjon": "17 m/s2"}, {"Model": "M18 FMTIW2F12-502X", "Støy": "106,4 dB", "Vibrasjon": "17,4 m/s2"}, {"Model": "M18 FMTIW2P12-50X", "Støy": "106,4 dB", "Vibrasjon": "17,3 m/s2"}, {"Model": "M18 FQID", "Støy": "98,9 dB", "Vibrasjon": "19,4 m/s2"}, {"Model": "M18 FHZ", "Støy": "95,7 dB", "Vibrasjon": "8,3 m/s2"}, {"Model": "M18 FMCS-0X", "Støy": "109,1 dB", "Vibrasjon": "2,37 m/s2"}, {"Model": "M18 ONEFHXDEL-552C", "Støy": "103,6 dB", "Vibrasjon": "14,2 m/s2"}, {"Model": "M18 CBLPD", "Støy": "104,8 dB", "Vibrasjon": "12,4 m/s2"}, {"Model": "C12 MT-402B", "Støy": "86,5 dB", "Vibrasjon": "8,7 m/s2"}, {"Model": "M12 FIWF12-422X", "Støy": "107,82 dB", "Vibrasjon": "17,24 m/s2"}, {"Model": "M12 BD", "Støy": "96 dB", "Vibrasjon": "1,5 m/s2"}, {"Model": "M12 FDD2-602X", "Støy": "85,8 dB", "Vibrasjon": "1,92 m/s2"}], "Hilti": [{"Model": "TE-50-AVR", "Støy": "108 dB", "Vibrasjon": "9 m/s2"}, {"Model": "Te30-a36", "Støy": "99 dB", "Vibrasjon": "10,6 m/s2"}, {"Model": "TE 6-A22 DRS", "Støy": "100 dB", "Vibrasjon": "13,4 m/s2"}], "Panasonic": [{"Model": "EY78A1", "Støy": "95 dB", "Vibrasjon": "11 m/s2"}]};
-
-    const brandSelect = document.getElementById('brand');
-    const modelSelect = document.getElementById('model');
-    const usageInput = document.getElementById('usage');
-    const resultDiv = document.getElementById('result');
-    const historyList = document.getElementById('history');
-
-    for (const brand in data) {
-      const opt = document.createElement('option');
-      opt.value = brand;
-      opt.textContent = brand;
-      brandSelect.appendChild(opt);
+    function setLanguage(lang) {
+      alert('Språk endres til: ' + lang + ' (flerspråklig innhold legges inn i neste versjon)');
     }
-
-    brandSelect.addEventListener('change', () => {
-      modelSelect.innerHTML = '<option value="">Velg modell</option>';
-      const selectedBrand = brandSelect.value;
-      if (data[selectedBrand]) {
-        data[selectedBrand].forEach(model => {
-          const opt = document.createElement('option');
-          opt.value = model.Model;
-          opt.textContent = model.Model;
-          modelSelect.appendChild(opt);
-        });
-      }
-    });
-
-    function calculateExposure() {
-      const brand = brandSelect.value;
-      const model = modelSelect.value;
-      const usage = parseFloat(usageInput.value);
-      if (!brand || !model || isNaN(usage)) {
-        resultDiv.innerHTML = "<p class='text-red-500'>Fyll ut alle feltene.</p>";
-        return;
-      }
-      const tool = data[brand].find(m => m.Model === model);
-      const noise = parseFloat(tool.Støy.replace(',', '.'));
-      const vibration = tool.Vibrasjon ? parseFloat(tool.Vibrasjon.replace(',', '.')) : null;
-      const vibrationScore = vibration ? (vibration * Math.sqrt(usage / 60)).toFixed(2) : 'Ingen data';
-      const noiseWarning = noise > 85 ? '🔊 Høy støy! Bruk hørselsvern.' : '';
-      const vibWarning = vibration && vibration > 10 ? '⚠️ Høy vibrasjon! Bruk tiltak.' : '';
-
-      resultDiv.innerHTML = `
-        <p><strong>Merke:</strong> ${brand}</p>
-        <p><strong>Modell:</strong> ${model}</p>
-        <p><strong>Støy:</strong> ${tool.Støy} ${noiseWarning}</p>
-        <p><strong>Vibrasjon (A8):</strong> ${vibrationScore} m/s² ${vibWarning}</p>
-        <p><strong>Brukstid:</strong> ${usage} minutter</p>
-      `;
-
-      const entry = { brand, model, noise: tool.Støy, vibration: vibrationScore, usage };
-      const history = JSON.parse(localStorage.getItem("history") || "[]");
-      history.unshift(entry);
-      localStorage.setItem("history", JSON.stringify(history));
-      updateHistory();
-    }
-
-    function updateHistory() {
-      const history = JSON.parse(localStorage.getItem("history") || "[]");
-      historyList.innerHTML = "";
-      history.forEach(item => {
-        const li = document.createElement('li');
-        li.className = "bg-gray-200 dark:bg-gray-700 p-2 rounded";
-        li.textContent = `${item.brand} / ${item.model} – ${item.vibration} m/s² – ${item.usage} min`;
-        historyList.appendChild(li);
-      });
-    }
-
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./service-worker.js');
     }
-
-    updateHistory();
   </script>
 </body>
 </html>
