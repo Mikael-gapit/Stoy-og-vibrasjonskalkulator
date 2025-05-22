@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="no" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Støy og Vibrasjonsassistent</title>
+  <!-- Enable class-based dark mode -->
+  <script>
+    tailwind.config = { darkMode: 'class' };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+  <style>
+    .dark-mode-transition {
+      transition: background-color .3s, color .3s;
+    }
+  </style>
+</head>
+<body class="dark-mode-transition bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+
+  <div class="min-h-screen flex flex-col">
+    <!-- HEADER -->
+    <header class="flex items-center justify-between p-4 shadow-md bg-white dark:bg-gray-800">
+      <div class="flex items-center space-x-4">
+        <img src="bravida_logo.png" alt="Bravida" class="h-12">
+        <h1 id="headerTitle" class="text-2xl font-extrabold">Støy & Vibrasjonsassistent</h1>
+      </div>
+      <div class="flex items-center space-x-2">
+        <select id="lang" aria-label="Velg språk" class="p-1 rounded border bg-white dark:bg-gray-700">
+          <option value="no">🇳🇴 NO</option>
+          <option value="en">🇬🇧 EN</option>
+          <option value="pl">🇵🇱 PL</option>
+        </select>
+        <button id="darkToggle" aria-label="Mørk modus" class="p-2 rounded bg-gray-200 dark:bg-gray-600">
+          <svg id="iconLight" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500 hidden" viewBox="0 0 20 20" fill="currentColor">
+            <!-- sun icon -->
+            <path d="M10 3.22l.61.61a1 1 0 01-.61.17A1 1 0 109.39 3.83L10 3.22zm5.66 3.62l.71-.71a1 1 0 10-1.42-1.42l-.71.71a1 1 0 101.42 1.42zM17 10a1 1 0 110-2h.01a1 1 0 010 2H17zM5.05 5.05a1 1 0 011.41 0l.71.71a1 1 0 11-1.42 1.42l-.71-.71a1 1 0 010-1.42zM10 16.78l-.61-.61a1 1 0 01.61-.17 1 1 0 01.17 1.78l-.17.17zM3 10a1 1 0 110-2h.01a1 1 0 010 2H3zm10.95 4.95a1 1 0 01-1.41 0l-.71-.71a1 1 0 011.42-1.42l.71.71a1 1 0 010 1.42z"/>
+          </svg>
+          <svg id="iconDark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-800 dark:text-gray-200" viewBox="0 0 20 20" fill="currentColor">
+            <!-- moon icon -->
+            <path d="M17.293 13.293A8 8 0 116.707 2.707a8.001 8.001 0 0010.586 10.586z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="flex-1 p-4 sm:p-6 grid gap-6 grid-cols-1 md:grid-cols-2">
+      <!-- INPUTS -->
+      <section class="space-y-4" aria-labelledby="inputs-heading">
+        <h2 id="inputs-heading" class="text-xl font-semibold">Velg verktøy</h2>
+        <div>
+          <label for="brand" id="lblBrand" class="block font-medium">Merke</label>
+          <select id="brand" class="w-full p-2 border rounded dark:bg-gray-800"></select>
+        </div>
+        <div>
+          <label for="model" id="lblModel" class="block font-medium">Modell</label>
+          <select id="model" class="w-full p-2 border rounded dark:bg-gray-800"></select>
+        </div>
+        <div>
+          <label for="usage" id="lblUsage" class="block font-medium">Brukstid (min)</label>
+          <input id="usage" type="number" min="0" class="w-full p-2 border rounded dark:bg-gray-800" placeholder="F.eks. 30">
+        </div>
+        <button id="calcBtn" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded transition" id="lblCalc">Beregn eksponering</button>
+      </section>
+
+      <!-- RESULTAT -->
+      <section class="space-y-4" aria-labelledby="result-heading">
+        <h2 id="result-heading" class="text-xl font-semibold">Resultat</h2>
+        <div id="result" class="p-4 border rounded bg-white dark:bg-gray-800"></div>
+      </section>
+    </main>
+
+    <!-- BILDEPREVIEW -->
+    <section class="p-6" aria-labelledby="image-heading">
+      <h2 id="image-heading" class="text-xl font-semibold mb-2">Verktøybilde</h2>
+      <div id="toolImage" class="w-full h-60 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center overflow-hidden">
+        <span class="text-gray-500">Ingen modell valgt</span>
+      </div>
+    </section>
+
+    <footer class="p-4 text-center text-sm text-gray-600 dark:text-gray-400">
+      © Bravida Norge AS
+    </footer>
+  </div>
+
+  <script>
+    const data = {"Milwaukee": [{"Model": "M18 FDDS", "Støy": "106,78 dB", "Vibrasjon": "1,85 m/s2"}, {"Model": "M18 FBS85", "Støy": "93,63 dB", "Vibrasjon": "1,5 m/s2"}, {"Model": "M18 CAG125XPDB", "Støy": "93,6 dB", "Vibrasjon": "4,79 m/s2"}, {"Model": "M18 FMS254", "Støy": "101,5 dB", "Vibrasjon": ""}, {"Model": "M18 FH-OX", "Støy": "103,6 dB", "Vibrasjon": "17 m/s2"}, {"Model": "M18 FMTIW2F12-502X", "Støy": "106,4 dB", "Vibrasjon": "17,4 m/s2"}, {"Model": "M18 FMTIW2P12-50X", "Støy": "106,4 dB", "Vibrasjon": "17,3 m/s2"}, {"Model": "M18 FQID", "Støy": "98,9 dB", "Vibrasjon": "19,4 m/s2"}, {"Model": "M18 FHZ", "Støy": "95,7 dB", "Vibrasjon": "8,3 m/s2"}, {"Model": "M18 FMCS-0X", "Støy": "109,1 dB", "Vibrasjon": "2,37 m/s2"}, {"Model": "M18 ONEFHXDEL-552C", "Støy": "103,6 dB", "Vibrasjon": "14,2 m/s2"}, {"Model": "M18 CBLPD", "Støy": "104,8 dB", "Vibrasjon": "12,4 m/s2"}, {"Model": "C12 MT-402B", "Støy": "86,5 dB", "Vibrasjon": "8,7 m/s2"}, {"Model": "M12 FIWF12-422X", "Støy": "107,82 dB", "Vibrasjon": "17,24 m/s2"}, {"Model": "M12 BD", "Støy": "96 dB", "Vibrasjon": "1,5 m/s2"}, {"Model": "M12 FDD2-602X", "Støy": "85,8 dB", "Vibrasjon": "1,92 m/s2"}], "Hilti": [{"Model": "TE-50-AVR", "Støy": "108 dB", "Vibrasjon": "9 m/s2"}, {"Model": "Te30-a36", "Støy": "99 dB", "Vibrasjon": "10,6 m/s2"}, {"Model": "TE 6-A22 DRS", "Støy": "100 dB", "Vibrasjon": "13,4 m/s2"}], "Panasonic": [{"Model": "EY78A1", "Støy": "95 dB", "Vibrasjon": "11 m/s2"}]};
+    const i18n = {
+      no: { title:"Støy & Vibrasjonsassistent", selectTool:"Velg verktøy", brand:"Merke", model:"Modell", usage:"Brukstid (min)", calc:"Beregn eksponering", result:"Resultat", image:"Verktøybilde" },
+      en: { title:"Noise & Vibration Assistant", selectTool:"Select tool", brand:"Brand", model:"Model", usage:"Usage time (min)", calc:"Calculate exposure", result:"Result", image:"Tool image" },
+      pl: { title:"Asystent Hałasu i Wibracji", selectTool:"Wybierz narzędzie", brand:"Marka", model:"Model", usage:"Czas użycia (min)", calc:"Oblicz ekspozycję", result:"Wynik", image:"Obraz narzędzia" }
+    };
+    const NOISE_LIMIT = 85, VIB_LIMIT = 10;
+
+    const brandEl = document.getElementById('brand'),
+          modelEl = document.getElementById('model'),
+          usageEl = document.getElementById('usage'),
+          calcBtn = document.getElementById('calcBtn'),
+          resultEl= document.getElementById('result'),
+          imageEl = document.getElementById('toolImage'),
+          langSel = document.getElementById('lang'),
+          darkBtn = document.getElementById('darkToggle'),
+          hdr     = document.getElementById('headerTitle'),
+          lBrand  = document.getElementById('lblBrand'),
+          lModel  = document.getElementById('lblModel'),
+          lUsage  = document.getElementById('lblUsage'),
+          lCalc   = document.getElementById('lblCalc');
+
+    function populateBrands() {
+      brandEl.innerHTML = `<option value="">{i18n.no.brand}</option>`;
+      Object.keys(data).forEach(b => brandEl.innerHTML += `<option value="${b}">${b}</option>`);
+    }
+
+    function setLanguage(lang) {
+      const t = i18n[lang];
+      hdr.textContent = t.title;
+      document.getElementById('inputs-heading').textContent = t.selectTool;
+      lBrand.textContent = t.brand;
+      lModel.textContent = t.model;
+      lUsage.textContent = t.usage;
+      lCalc.textContent = t.calc;
+      document.getElementById('result-heading').textContent = t.result;
+      document.getElementById('image-heading').textContent = t.image;
+    }
+
+    brandEl.onchange = () => {
+      modelEl.innerHTML = `<option value="">${i18n[langSel.value].model}</option>`;
+      (data[brandEl.value]||[]).forEach(m => modelEl.innerHTML += `<option value="${m.Model}">${m.Model}</option>`);
+      resultEl.innerHTML = '';
+      imageEl.innerHTML = '<span class="text-gray-500">Ingen modell valgt</span>';
+    };
+
+    modelEl.onchange = () => {
+      const m = modelEl.value, img = new Image();
+      img.alt = m; img.className='object-contain h-full';
+      let exts = ['.jpg', '.png'], i = 0;
+      function tryNext() {
+        if (i >= exts.length) { img.src = `https://via.placeholder.com/400x200?text=${encodeURIComponent(m)}`; return; }
+        const url = `bilder/${encodeURIComponent(m)}${exts[i]}`;
+        img.src = url; img.onerror = () => { i++; tryNext(); };
+      }
+      tryNext();
+      imageEl.innerHTML = ''; imageEl.append(img); resultEl.innerHTML = '';
+    };
+
+    calcBtn.onclick = () => {
+      const b = brandEl.value, m = modelEl.value, u = parseFloat(usageEl.value);
+      if (!b || !m || isNaN(u)) { resultEl.innerHTML = `<p class="text-red-600">Fyll ut alle feltene</p>`; return; }
+      const t = data[b].find(x => x.Model === m);
+      const noise = parseFloat(t.Støy.replace(',', '.')) || 0;
+      const vib = parseFloat(t.Vibrasjon.replace(',', '.')) || 0;
+      const vibA8 = (vib * Math.sqrt(u/60)).toFixed(2);
+      const pctN = Math.min(100, Math.round(noise/NOISE_LIMIT*100));
+      const pctV = Math.min(100, Math.round(vib/VIB_LIMIT*100));
+      let warningHtml = '';
+      if (noise > NOISE_LIMIT) {
+        warningHtml += `
+          <div class="mt-4 p-4 border-l-4 border-red-500 bg-red-50 dark:bg-red-900/30 text-red-800 rounded">
+            <h3 class="font-bold mb-2">Tiltak ved høy støy</h3>
+            <ul class="list-disc list-inside">
+              <li>Bruk hørselsvern (ørepropper eller hørselsvern)</li>
+              <li>Begrens total brukstid</li>
+              <li>Ta regelmessige pauser</li>
+            </ul>
+          </div>`;}
+      if (vib > VIB_LIMIT) {
+        warningHtml += `
+          <div class="mt-4 p-4 border-l-4 border-red-500 bg-red-50 dark:bg-red-900/30 text-red-800 rounded">
+            <h3 class="font-bold mb-2">Tiltak ved høy vibrasjon</h3>
+            <ul class="list-disc list-inside">
+              <li>Bruk vibrasjonsdempende hansker</li>
+              <li>Begrens total brukstid</li>
+              <li>Ta regelmessige pauser</li>
+            </ul>
+          </div>`;}
+      resultEl.innerHTML = `
+        <p><strong>${i18n[langSel.value].brand}:</strong> ${b}</p>
+        <p><strong>${i18n[langSel.value].model}:</strong> ${m}</p> 
+        <p><strong>${i18n[langSel.value].usage}:</strong> ${u} min</p>
+        <div class="mt-2"><strong>Støy:</strong> ${t.Støy} (${pctN}% av 85 dB)
+          <div class="w-full bg-gray-200 h-3 rounded overflow-hidden"><div class="h-3 ${pctN>100?'bg-red-600':'bg-green-600'}" style="width:${pctN}%"></div></div>
+        </div>
+        <div class="mt-2"><strong>Vibrasjon (A(8)):</strong> ${vibA8} m/s² (${pctV}% av 10)
+          <div class="w-full bg-gray-200 h-3 rounded overflow-hidden"><div class="h-3 ${pctV>100?'bg-red-600':'bg-green-600'}" style="width:${pctV}%"></div></div>
+        </div>
+        ${warningHtml}
+      `;
+    };
+
+    langSel.onchange = () => setLanguage(langSel.value);
+    darkBtn.onclick = () => {
+      document.documentElement.classList.toggle('dark');
+      document.getElementById('iconLight').classList.toggle('hidden');
+      document.getElementById('iconDark').classList.toggle('hidden');
+    };
+    window.addEventListener('load', () => {
+      populateBrands();
+      setLanguage(langSel.value);
+      if ('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js');
+    });
+  </script>
+</body>
+</html>
