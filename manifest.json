@@ -1,6 +1,6 @@
 {
-  "name": "Støy og vibrasjonsassistent",
-  "short_name": "Bravida Assistent",
+  "name": "St\u00f8y og vibrasjonsassistent",
+  "short_name": "St\u00f8yAssistent",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#1f2937",
