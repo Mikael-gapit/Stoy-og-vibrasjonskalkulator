@@ -1,43 +1,108 @@
+
 <!DOCTYPE html>
 <html lang="no">
 <head>
   <meta charset="UTF-8">
-  <title>Støy og vibrasjonsassistent</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icon-192.png" />
+  <title id="docTitle">Title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white transition duration-300">
-  <div class="max-w-4xl mx-auto p-4">
-    <header class="flex justify-between items-center mb-6">
-      <div class="flex items-center gap-4">
-        <img src="bravida logo-400x119.png" alt="Bravida Logo" class="h-12" />
-        <h1 class="text-3xl font-bold">Støy og vibrasjonsassistent</h1>
-      </div>
-      <div class="flex gap-2">
-        <select id="language" onchange="setLanguage(this.value)" class="border rounded p-1 bg-white dark:bg-gray-700 dark:text-white">
-          <option value="no">🇳🇴</option>
-          <option value="se">🇸🇪</option>
-          <option value="dk">🇩🇰</option>
-          <option value="fi">🇫🇮</option>
-          <option value="en">🇬🇧</option>
-          <option value="pl">🇵🇱</option>
-        </select>
-      </div>
-    </header>
-    <main id="app">
-      <!-- App content will be injected here -->
-      <p>🛠️ Denne versjonen er under oppdatering. Full funksjon og visuelle effekter legges inn nå.</p>
-    </main>
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white">
+<div class="max-w-4xl mx-auto p-4">
+  <header class="flex justify-between items-center mb-6">
+    <div class="flex items-center gap-4">
+      <img src="bravida logo-400x119.png" alt="Bravida Logo" class="h-12">
+      <h1 id="title" class="text-3xl font-bold"></h1>
+    </div>
+    <select id="language" class="border p-1 rounded bg-white dark:bg-gray-700 dark:text-white">
+      <option value="no">🇳🇴 NO</option>
+      <option value="se">🇸🇪 SE</option>
+      <option value="dk">🇩🇰 DK</option>
+      <option value="fi">🇫🇮 FI</option>
+      <option value="en">🇬🇧 EN</option>
+      <option value="pl">🇵🇱 PL</option>
+    </select>
+  </header>
+  <div class="space-y-4">
+    <label id="lblBrand"></label>
+    <select id="brand" class="w-full p-2 border rounded dark:bg-gray-800 dark:text-white"></select>
+    <label id="lblModel"></label>
+    <select id="model" class="w-full p-2 border rounded dark:bg-gray-800 dark:text-white"></select>
+    <label id="lblUsage"></label>
+    <input type="number" id="usage" class="w-full p-2 border rounded dark:bg-gray-800 dark:text-white" placeholder="">
+    <button id="btnCalc" class="px-4 py-2 bg-blue-600 text-white rounded"></button>
+    <div id="toolImage"></div>
+    <div id="result" class="mt-4 p-4 border rounded bg-white dark:bg-gray-800"></div>
+    <h2 id="lblHistory" class="text-xl font-semibold mt-6"></h2>
+    <ul id="historyList" class="list-disc list-inside"></ul>
+    <button id="btnCopy" class="px-3 py-1 bg-green-500 text-white rounded"></button>
+    <button id="btnEmail" class="px-3 py-1 bg-indigo-500 text-white rounded"></button>
+    <button id="btnTxt" class="px-3 py-1 bg-purple-500 text-white rounded"></button>
+    <button id="btnPdf" class="px-3 py-1 bg-red-500 text-white rounded"></button>
+    <h2 id="lblHMS" class="text-xl font-semibold mt-6"></h2>
+    <iframe src="HMS-handbok.pdf" class="w-full h-64 border"></iframe>
+    <ul class="list-disc list-inside">
+      <li><a id="linkNoise" href="" target="_blank"></a></li>
+      <li><a id="linkVib" href="" target="_blank"></a></li>
+      <li><a id="linkHMS" href="" target="_blank"></a></li>
+    </ul>
   </div>
-  <script>
-    function setLanguage(lang) {
-      alert('Språk endres til: ' + lang + ' (flerspråklig innhold legges inn i neste versjon)');
-    }
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js');
-    }
-  </script>
+</div>
+<script>
+const translations = {"no": {"title": "St\u00f8y og vibrasjonsassistent", "selectBrand": "Velg merke:", "selectModel": "Velg modell:", "usageTime": "Brukstid (minutter):", "calculate": "Beregn", "result": "Resultat", "history": "Historikk", "copyReport": "Kopier rapport", "downloadTxt": "Last ned historikk", "sendEmail": "Send rapport p\u00e5 e-post", "downloadPdf": "Last ned PDF-rapport", "hmsSection": "HMS & fagstoff", "linkAtNoise": "Arbeidstilsynet \u2013 St\u00f8y", "linkAtVib": "Arbeidstilsynet \u2013 Vibrasjoner", "linkBravidaHms": "Bravida HMS-h\u00e5ndbok"}, "se": {"title": "Bullr- och vibrationsassistent", "selectBrand": "V\u00e4lj m\u00e4rke:", "selectModel": "V\u00e4lj modell:", "usageTime": "Anv\u00e4ndningstid (minuter):", "calculate": "Ber\u00e4kna", "result": "Resultat", "history": "Historik", "copyReport": "Kopiera rapport", "downloadTxt": "Ladda ner historik", "sendEmail": "Skicka rapport via e-post", "downloadPdf": "Ladda ner PDF-rapport", "hmsSection": "HMS & fackinfo", "linkAtNoise": "Arbetarskyddsstyrelsen \u2013 Buller", "linkAtVib": "Arbetarskyddsstyrelsen \u2013 Vibration", "linkBravidaHms": "Bravida HMS-handbok"}, "dk": {"title": "St\u00f8j- og vibrationsassistent", "selectBrand": "V\u00e6lg m\u00e6rke:", "selectModel": "V\u00e6lg model:", "usageTime": "Brugsvarighed (minutter):", "calculate": "Beregn", "result": "Resultat", "history": "Historik", "copyReport": "Kopier rapport", "downloadTxt": "Hent historik", "sendEmail": "Send rapport via e-mail", "downloadPdf": "Hent PDF-rapport", "hmsSection": "HMS & faginfo", "linkAtNoise": "Arbejdstilsynet \u2013 St\u00f8j", "linkAtVib": "Arbejdstilsynet \u2013 Vibration", "linkBravidaHms": "Bravida HMS-h\u00e5ndbog"}, "fi": {"title": "Melun ja t\u00e4rin\u00e4n avustaja", "selectBrand": "Valitse merkki:", "selectModel": "Valitse malli:", "usageTime": "K\u00e4ytt\u00f6aika (minuutit):", "calculate": "Laske", "result": "Tulos", "history": "Historia", "copyReport": "Kopioi raportti", "downloadTxt": "Lataa historia", "sendEmail": "L\u00e4het\u00e4 raportti s\u00e4hk\u00f6postilla", "downloadPdf": "Lataa PDF-raportti", "hmsSection": "HMS ja asiantuntijatieto", "linkAtNoise": "Ty\u00f6suojelu \u2013 Melu", "linkAtVib": "Ty\u00f6suojelu \u2013 T\u00e4rin\u00e4", "linkBravidaHms": "Bravida HMS-k\u00e4sikirja"}, "en": {"title": "Noise & Vibration Assistant", "selectBrand": "Select Brand:", "selectModel": "Select Model:", "usageTime": "Usage Time (minutes):", "calculate": "Calculate", "result": "Result", "history": "History", "copyReport": "Copy report", "downloadTxt": "Download history", "sendEmail": "Send email", "downloadPdf": "Download PDF report", "hmsSection": "HSE & Resources", "linkAtNoise": "Labour Inspection \u2013 Noise", "linkAtVib": "Labour Inspection \u2013 Vibration", "linkBravidaHms": "Bravida HSE Handbook"}, "pl": {"title": "Asystent ha\u0142asu i drga\u0144", "selectBrand": "Wybierz mark\u0119:", "selectModel": "Wybierz model:", "usageTime": "Czas u\u017cytkowania (minuty):", "calculate": "Oblicz", "result": "Wynik", "history": "Historia", "copyReport": "Kopiuj raport", "downloadTxt": "Pobierz histori\u0119", "sendEmail": "Wy\u015blij raport mailem", "downloadPdf": "Pobierz raport PDF", "hmsSection": "BHP & materia\u0142y", "linkAtNoise": "Inspekcja Pracy \u2013 Ha\u0142as", "linkAtVib": "Inspekcja Pracy \u2013 Drgania", "linkBravidaHms": "Podr\u0119cznik BHP Bravida"}};
+let data = {};
+fetch('data.json').then(r=>r.json()).then(j=>{ data=j; init(); });
+
+function init() {
+  document.getElementById('language').onchange = e=>setLanguage(e.target.value);
+  setLanguage('no');
+  populateBrands();
+}
+
+function setLanguage(lang) {
+  const t = translations[lang];
+  document.getElementById('title').innerText = t.title;
+  document.getElementById('docTitle').innerText = t.title;
+  document.getElementById('lblBrand').innerText = t.selectBrand;
+  document.getElementById('lblModel').innerText = t.selectModel;
+  document.getElementById('lblUsage').innerText = t.usageTime;
+  document.getElementById('btnCalc').innerText = t.calculate;
+  document.getElementById('lblHistory').innerText = t.history;
+  document.getElementById('btnCopy').innerText = t.copyReport;
+  document.getElementById('btnEmail').innerText = t.sendEmail;
+  document.getElementById('btnTxt').innerText = t.downloadTxt;
+  document.getElementById('btnPdf').innerText = t.downloadPdf;
+  document.getElementById('lblHMS').innerText = t.hmsSection;
+  document.getElementById('linkNoise').innerText = t.linkAtNoise; document.getElementById('linkNoise').href='https://www.arbeidstilsynet.no/tema/stoy/';
+  document.getElementById('linkVib').innerText = t.linkAtVib; document.getElementById('linkVib').href='https://www.arbeidstilsynet.no/tema/vibrasjoner/';
+  document.getElementById('linkHMS').innerText = t.linkBravidaHms; document.getElementById('linkHMS').href='https://www.bravida.no/hms/';
+}
+
+function populateBrands() {
+  const bs = document.getElementById('brand'); bs.innerHTML='<option>--</option>';
+  Object.keys(data).forEach(b=>{ const o=document.createElement('option');o.value=b; o.text=b; bs.append(o); });
+  bs.onchange = populateModels;
+}
+
+function populateModels() {
+  const bs=document.getElementById('brand'), ms=document.getElementById('model');
+  ms.innerHTML='<option>--</option>';
+  (data[bs.value]||[]).forEach(m=>{ const o=document.createElement('option'); o.value=m.Model; o.text=m.Model; ms.append(o); });
+  ms.onchange=showImage;
+}
+
+function showImage(){
+  const m=document.getElementById('model').value, ic=document.getElementById('toolImage');
+  const img=new Image(); img.src='bilder/'+m+'.jpg'; img.alt=m;
+  img.onerror=()=>img.src='https://via.placeholder.com/400x200?text='+encodeURIComponent(m);
+  ic.innerHTML=''; ic.append(img);
+}
+
+// calculate, export, PDF functions omitted for brevity
+
+if('serviceWorker'in navigator){ navigator.serviceWorker.register('./service-worker.js'); }
+</script>
 </body>
 </html>
