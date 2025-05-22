@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <title>Støy og Vibrasjonskalkulator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white transition duration-300">
+  <div class="max-w-4xl mx-auto p-6">
+    <header class="flex justify-between items-center mb-8">
+      <div class="flex items-center gap-4">
+        <img src="bravida logo-400x119.png" alt="Bravida Logo" class="h-14" />
+        <h1 class="text-4xl font-extrabold trans" data-no="Støy og Vibrasjonskalkulator" data-en="Noise and Vibration Calculator" data-pl="Kalkulator hałasu i drgań">Støy og Vibrasjonskalkulator</h1>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="setLanguage('no')" class="px-2"><img src="https://flagcdn.com/w40/no.png" alt="NO" /></button>
+        <button onclick="setLanguage('en')" class="px-2"><img src="https://flagcdn.com/w40/gb.png" alt="EN" /></button>
+        <button onclick="setLanguage('pl')" class="px-2"><img src="https://flagcdn.com/w40/pl.png" alt="PL" /></button>
+      </div>
+    </header>
+
+    <div class="grid gap-6">
+      <div>
+        <label for="brand" class="block font-semibold trans" data-no="Velg Merke:" data-en="Select Brand:" data-pl="Wybierz markę:">Velg Merke:</label>
+        <select id="brand" onchange="populateModels()" class="w-full p-3 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600"></select>
+      </div>
+
+      <div>
+        <label for="model" class="block font-semibold trans" data-no="Velg Modell:" data-en="Select Model:" data-pl="Wybierz model:">Velg Modell:</label>
+        <select id="model" onchange="showImage()" class="w-full p-3 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600"></select>
+      </div>
+
+      <div>
+        <label for="usage" class="block font-semibold trans" data-no="Brukstid (minutter):" data-en="Usage Time (minutes):" data-pl="Czas użytkowania (minuty):">Brukstid (minutter):</label>
+        <input type="number" id="usage" placeholder="Skriv inn brukstid i minutter" class="w-full p-3 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600" />
+      </div>
+
+      <div>
+        <button onclick="calculateExposure()" class="px-5 py-3 bg-blue-600 text-white rounded hover:bg-blue-500 trans" data-no="Beregn" data-en="Calculate" data-pl="Oblicz">Beregn</button>
+      </div>
+
+      <div id="toolImage" class="mt-4"></div>
+      <div id="result" class="mt-6 p-5 border rounded bg-white dark:bg-gray-800 dark:text-white shadow-lg"></div>
+    </div>
+  </div>
+
+  <script>
+    const data = {"Milwaukee": [{"Model": "M18 FDDS", "Støy": "106,78 dB", "Vibrasjon": "1,85 m/s2"}, {"Model": "M18 FBS85", "Støy": "93,63 dB", "Vibrasjon": "1,5 m/s2"}, {"Model": "M18 CAG125XPDB", "Støy": "93,6 dB", "Vibrasjon": "4,79 m/s2"}, {"Model": "M18 FMS254", "Støy": "101,5 dB", "Vibrasjon": ""}, {"Model": "M18 FH-OX", "Støy": "103,6 dB", "Vibrasjon": "17 m/s2"}, {"Model": "M18 FMTIW2F12-502X", "Støy": "106,4 dB", "Vibrasjon": "17,4 m/s2"}, {"Model": "M18 FMTIW2P12-50X", "Støy": "106,4 dB", "Vibrasjon": "17,3 m/s2"}, {"Model": "M18 FQID", "Støy": "98,9 dB", "Vibrasjon": "19,4 m/s2"}, {"Model": "M18 FHZ", "Støy": "95,7 dB", "Vibrasjon": "8,3 m/s2"}, {"Model": "M18 FMCS-0X", "Støy": "109,1 dB", "Vibrasjon": "2,37 m/s2"}, {"Model": "M18 ONEFHXDEL-552C", "Støy": "103,6 dB", "Vibrasjon": "14,2 m/s2"}, {"Model": "M18 CBLPD", "Støy": "104,8 dB", "Vibrasjon": "12,4 m/s2"}, {"Model": "C12 MT-402B", "Støy": "86,5 dB", "Vibrasjon": "8,7 m/s2"}, {"Model": "M12 FIWF12-422X", "Støy": "107,82 dB", "Vibrasjon": "17,24 m/s2"}, {"Model": "M12 BD", "Støy": "96 dB", "Vibrasjon": "1,5 m/s2"}, {"Model": "M12 FDD2-602X", "Støy": "85,8 dB", "Vibrasjon": "1,92 m/s2"}], "Hilti": [{"Model": "TE-50-AVR", "Støy": "108 dB", "Vibrasjon": "9 m/s2"}, {"Model": "Te30-a36", "Støy": "99 dB", "Vibrasjon": "10,6 m/s2"}, {"Model": "TE 6-A22 DRS", "Støy": "100 dB", "Vibrasjon": "13,4 m/s2"}], "Panasonic": [{"Model": "EY78A1", "Støy": "95 dB", "Vibrasjon": "11 m/s2"}]};
+
+    function populateBrands() {
+      const brandSelect = document.getElementById('brand');
+      brandSelect.innerHTML = '<option value="">Velg Merke</option>';
+      for (const brand in data) {
+        const option = document.createElement('option');
+        option.value = brand;
+        option.textContent = brand;
+        brandSelect.appendChild(option);
+      }
+    }
+
+    function populateModels() {
+      const brand = document.getElementById('brand').value;
+      const modelSelect = document.getElementById('model');
+      modelSelect.innerHTML = '<option value="">Velg Modell</option>';
+      if (data[brand]) {
+        data[brand].forEach(model => {
+          const option = document.createElement('option');
+          option.value = model.Model;
+          option.textContent = model.Model;
+          modelSelect.appendChild(option);
+        });
+      }
+    }
+
+    function showImage() {
+      const model = document.getElementById('model').value;
+      const imgContainer = document.getElementById('toolImage');
+      const img = new Image();
+      img.src = "bilder/" + model + ".jpg";
+      img.alt = model;
+      img.className = "w-full max-h-64 object-contain rounded shadow";
+      img.onerror = () => {
+        img.src = "https://via.placeholder.com/600x400?text=" + encodeURIComponent(model);
+      };
+      imgContainer.innerHTML = "";
+      imgContainer.appendChild(img);
+    }
+
+    function calculateExposure() {
+      const brand = document.getElementById('brand').value;
+      const model = document.getElementById('model').value;
+      const usage = parseFloat(document.getElementById('usage').value);
+      const resultDiv = document.getElementById('result');
+      if (!brand || !model || isNaN(usage)) {
+        resultDiv.innerHTML = '<p class="text-red-600">Vennligst fyll ut alle feltene.</p>';
+        return;
+      }
+      const modelData = data[brand].find(m => m.Model === model);
+      const noise = modelData.Støy;
+      const vibration = modelData.Vibrasjon ? parseFloat(modelData.Vibrasjon.replace(',', '.')) : null;
+      const vibrationScore = vibration ? (vibration * Math.sqrt(usage / 60)).toFixed(2) : 'Ingen data';
+      const highRisk = vibration && vibration > 10;
+      const highNoise = parseFloat(noise) > 85;
+
+      const warning = highRisk ? `
+        <div class="mt-4 p-4 bg-red-100 text-red-800 border border-red-300 rounded animate-pulse">
+          <h3 class="font-bold">⚠ Advarsel / Warning / Ostrzeżenie</h3>
+          <p>Høy vibrasjonseksponering! Bruk godkjent verneutstyr og vurder pauser oftere.</p>
+        </div>
+        <div class="mt-2">
+          <h3 class="font-semibold">Tiltak:</h3>
+          <ul class="list-disc list-inside">
+            <li>Bruk vibrasjonsdempende hansker</li>
+            <li>Begrens kontinuerlig brukstid</li>
+            <li>Ta pauser oftere</li>
+          </ul>
+        </div>
+      ` : "";
+
+      resultDiv.innerHTML = `
+        <h2 class="text-xl font-bold mb-3">Resultat</h2>
+        <p><strong>Merke:</strong> ${brand}</p>
+        <p><strong>Modell:</strong> ${model}</p>
+        <p><strong>Brukstid:</strong> ${usage} minutter</p>
+        <p><strong>Støyeksponering:</strong> ${noise}</p>
+        <p><strong>Vibrasjonseksponering (A(8)):</strong> <span class="${highRisk ? 'text-red-600' : 'text-green-600'} font-semibold">${vibrationScore} m/s²</span></p>
+        ${warning}
+      `;
+    }
+
+    function setLanguage(lang) {
+      document.querySelectorAll('.trans').forEach(el => {
+        const txt = el.getAttribute('data-' + lang);
+        if (txt) el.innerText = txt;
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', populateBrands);
+  </script>
+</body>
+</html>
