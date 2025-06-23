@@ -6,22 +6,92 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bravida Vibrasjonsassistent</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f4; color: #222; max-width: 800px; margin: auto; padding: 1rem; }
-    h2, h3 { color: #004077; }
-    select, button { padding: 6px; font-size: 1rem; margin: 4px 0; border-radius: 4px; border: 1px solid #aaa; }
-    button { background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    .eksponering-tabell { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; }
-    .eksponering-tabell th, .eksponering-tabell td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    .eksponering-tabell th { background: #007bff; color: white; }
-    .eksponering-tabell tr:nth-child(even) { background: #f0f8ff; }
-    .tool-img { max-height: 150px; margin-top: 1rem; }
-    .Grønn { background-color: #d4edda; }
-    .Gul { background-color: #fff3cd; }
-    .Rød { background-color: #f8d7da; }
+    :root {
+      --bakgrunn: #f4f4f4;
+      --tekst: #222;
+      --primær: #007bff;
+      --sekundær: #004077;
+      --grønn: #d4edda;
+      --gul: #fff3cd;
+      --rød: #f8d7da;
+      --hvit: #ffffff;
+    }
+    body.dark {
+      --bakgrunn: #1e1e1e;
+      --tekst: #f0f0f0;
+      --primær: #3399ff;
+      --sekundær: #aad4ff;
+      --hvit: #2c2c2c;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bakgrunn);
+      color: var(--tekst);
+      margin: 0;
+      padding: 1rem;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h1, h2, h3 { color: var(--sekundær); }
+
+    select, button {
+      padding: 6px;
+      font-size: 1rem;
+      margin: 6px 0;
+      border-radius: 4px;
+      border: 1px solid #aaa;
+      background: var(--hvit);
+      color: var(--tekst);
+    }
+
+    button {
+      background: var(--primær);
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .eksponering-tabell {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      background: var(--hvit);
+    }
+
+    .eksponering-tabell th, .eksponering-tabell td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .eksponering-tabell th {
+      background: var(--primær);
+      color: white;
+    }
+
+    .Grønn { background-color: var(--grønn); }
+    .Gul { background-color: var(--gul); }
+    .Rød { background-color: var(--rød); }
+
+    .tool-img {
+      max-height: 150px;
+      margin-top: 1rem;
+    }
+
+    @media screen and (max-width: 600px) {
+      body { padding: 0.5rem; }
+      select, button { width: 100%; font-size: 1.1rem; }
+    }
   </style>
 </head>
 <body>
+  <button onclick="toggleTheme()">🌓 Bytt tema</button>
   <img src="bravida logo-400x119.png" alt="Bravida logo" style="max-width: 200px;"/>
   <h1>Vibrasjonsassistent</h1>
 
@@ -37,6 +107,10 @@
   <div id="toolInfo"></div>
 
   <script>
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+    }
+
     async function loadTools() {
       const response = await fetch('./data.json');
       const data = await response.json();
@@ -66,7 +140,8 @@
         const valgtKategori = categorySelect.value;
         select.innerHTML = '<option disabled selected>-- Velg et verktøy --</option>';
         verktøyListe.forEach(v => {
-          if ((valgtMerke === 'alle' || v.brand === valgtMerke) && (valgtKategori === 'alle' || v.Kategori === valgtKategori)) {
+          if ((valgtMerke === 'alle' || v.brand === valgtMerke) &&
+              (valgtKategori === 'alle' || v.Kategori === valgtKategori)) {
             const option = document.createElement('option');
             option.value = v.Model;
             option.textContent = `${v.Model} (${v.Kategori})`;
@@ -107,12 +182,21 @@
       html += `<h3>Eksponering og tiltak</h3>`;
       html += `<table class='eksponering-tabell'><thead><tr><th>Minutt</th><th>Eksponering</th><th>Tiltak</th></tr></thead><tbody>`;
 
-      
-        [1,5,10,30,60].forEach(min => {
-          const [e, farge] = vurderTiltak(vibrasjon, min);
-          const tiltaktekst = (v.Tiltak && v.Tiltak[farge]) ? v.Tiltak[farge] : '';
-          html += `<tr class='${farge}'><td>${min}</td><td>${e}</td><td>${farge}<br><small>${tiltaktekst}</small></td></tr>`;
-        });
+      [1,5,10,30,60].forEach(min => {
+        const [e, farge] = vurderTiltak(vibrasjon, min);
+        html += `<tr class='${farge}'><td>${min}</td><td>${e}</td><td>${farge}</td></tr>`;
+      });
+
+      html += `</tbody></table>
+      <h3>Forklaring på tiltak</h3>
+      <table class='eksponering-tabell'>
+        <thead><tr><th>Nivå</th><th>Eksponeringsverdi</th><th>Risiko</th><th>Tiltak</th></tr></thead>
+        <tbody>
+          <tr class='Grønn'><td>Grønn</td><td>&lt; 6,25</td><td>Lav</td><td>Ingen tiltak nødvendig.</td></tr>
+          <tr class='Gul'><td>Gul</td><td>6,25 – 25</td><td>Moderat</td><td>Ta pauser, roter oppgaver, bruk lavvibrasjonsverktøy.</td></tr>
+          <tr class='Rød'><td>Rød</td><td>&ge; 25</td><td>Høy</td><td>Stans arbeid, bytt verktøy, planlegg alternative løsninger.</td></tr>
+        </tbody>
+      </table>`;
 
       info.innerHTML = html;
     }
