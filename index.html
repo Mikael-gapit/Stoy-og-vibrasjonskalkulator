@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html lang="no">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bravida Vibrasjonsassistent</title>
+<style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 1rem; }
+    .tool-img { max-height: 150px; margin-top: 1rem; }
+    .eksponering-tabell td, .eksponering-tabell th { padding: 6px; border: 1px solid #ccc; text-align: center; }
+    .Grønn { background-color: #d4edda; }
+    .Gul { background-color: #fff3cd; }
+    .Rød { background-color: #f8d7da; }
+  </style>
+
+<style>
+  .verneutstyr { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+  .verneutstyr img { height: 32px; }
+  .eksponering-logg { margin-top: 24px; padding: 1rem; border: 1px solid #ccc; background: #f8f9fa; }
+</style>
+
+</head>
+<body>
+<img alt="Bravida logo" src="bravida logo-400x119.png" style="max-width: 200px;"/>
+<h1>Vibrasjonsassistent</h1>
+<label for="brandFilter">Filtrer etter merke:</label>
+<select id="brandFilter"><option selected="" value="alle">Alle merker</option></select>
+
+<label for="categoryFilter">Filtrer etter kategori:</label>
+<select id="categoryFilter"><option selected="" value="alle">Alle kategorier</option></select>
+
+<label for="toolSelect">Velg verktøy:</label>
+<select id="toolSelect"><option disabled="" selected="">-- Velg et verktøy --</option></select>
+
+<div id="toolInfo"></div>
+<div class="eksponering-logg" id="eksponeringsLogg"><h3>Dagens eksponering</h3><ul id="loggListe"></ul><p id="loggTotal"></p></div>
+
+
+<script>
+async function loadData() {
+  const response = await fetch('data.json');
+  const data = await response.json();
+
+  const toolSelect = document.getElementById('toolSelect');
+  const brandSelect = document.getElementById('brandFilter');
+  const categorySelect = document.getElementById('categoryFilter');
+  const toolInfo = document.getElementById('toolInfo');
+
+  const tools = [];
+
+  for (const [brand, items] of Object.entries(data)) {
+    items.forEach(item => {
+      item.brand = brand;
+      item.kategori = item.Kategori || 'Ukjent';
+      tools.push(item);
+    });
+  }
+
+  // Fyll unike kategorier
+  const kategorier = [...new Set(tools.map(t => t.kategori))].sort();
+  kategorier.forEach(k => {
+    const opt = document.createElement('option');
+    opt.value = k;
+    opt.textContent = k;
+    categorySelect.appendChild(opt);
+  });
+
+  // Fyll unike merker
+  const merker = [...new Set(tools.map(t => t.brand))].sort();
+  merker.forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b;
+    opt.textContent = b;
+    brandSelect.appendChild(opt);
+  });
+
+  function oppdaterVerktøyListe() {
+    const valgtKategori = categorySelect.value;
+    const valgtMerke = brandSelect.value;
+
+    toolSelect.innerHTML = '<option disabled selected>-- Velg et verktøy --</option>';
+    tools.forEach(tool => {
+      if (
+        (valgtKategori === 'alle' || tool.kategori === valgtKategori) &&
+        (valgtMerke === 'alle' || tool.brand === valgtMerke)
+      ) {
+        const opt = document.createElement('option');
+        opt.value = tool.Model;
+        opt.textContent = `${tool.Model} (${tool.kategori})`;
+        toolSelect.appendChild(opt);
+      }
+    });
+  }
+
+  categorySelect.addEventListener('change', oppdaterVerktøyListe);
+  brandSelect.addEventListener('change', oppdaterVerktøyListe);
+
+  toolSelect.addEventListener('change', (e) => {
+    const valgt = tools.find(t => t.Model === e.target.value);
+    visVerktøy(valgt);
+  });
+
+  function vurderTiltak(v, min) {
+    if (!v || isNaN(v)) return ['-', ''];
+    const t = min / 60;
+    const e = (v * Math.sqrt(t)) ** 2;
+    if (e < 6.25) return [e.toFixed(2), 'Grønn'];
+    else if (e < 25) return [e.toFixed(2), 'Gul'];
+    else return [e.toFixed(2), 'Rød'];
+  }
+
+  
+  const dagslogg = [];
+  const loggListe = document.getElementById("loggListe");
+  const loggTotal = document.getElementById("loggTotal");
+
+  function visVerneutstyr(farge) {
+    let html = "";
+    if (farge === "Gul") {
+      html += "<div class='verneutstyr'><strong>Anbefalt verneutstyr:</strong> ";
+      html += "<img src='icon-hansker.png' alt='Hansker'/>";
+      html += "<img src='icon-horselvern.png' alt='Hørselsvern'/>";
+      html += "</div>";
+    } else if (farge === "Rød") {
+      html += "<div class='verneutstyr'><strong>Obligatorisk verneutstyr:</strong> ";
+      html += "<img src='icon-hansker.png' alt='Hansker'/>";
+      html += "<img src='icon-hjelm.png' alt='Hjelm'/>";
+      html += "<img src='icon-horselvern.png' alt='Hørselsvern'/>";
+      html += "<img src='icon-varsling.png' alt='Kontakt HMS'/>";
+      html += "</div>";
+    }
+    return html;
+  }
+
+  function leggTilIDagslogg(verktøy, eksponering) {
+    dagslogg.push({ navn: verktøy.Model, verdi: parseFloat(eksponering) });
+    oppdaterDagslogg();
+  }
+
+  function oppdaterDagslogg() {
+    loggListe.innerHTML = "";
+    let sum = 0;
+    dagslogg.forEach(e => {
+      sum += e.verdi;
+      const li = document.createElement("li");
+      li.textContent = `${e.navn} – ${e.verdi.toFixed(2)} m/s²²`;
+      loggListe.appendChild(li);
+    });
+    const status = sum < 6.25 ? "✅ Lav total eksponering" :
+                   sum < 25 ? "⚠️ Nær grense – vurder tiltak" :
+                   "❌ Grense overskredet – stopp arbeid!";
+    loggTotal.textContent = `Total eksponering i dag: ${sum.toFixed(2)} m/s²² – ${status}`;
+  }
+
+  function visVerktøy(v) {
+    const vibrasjon = parseFloat((v.Vibrasjon || '0').replace(',', '.'));
+    const støy = v.Støy || '-';
+
+    let html = `<h2>${v.Model}</h2>`;
+    html += `<img src='bilder/${v.Model}.jpg' class='tool-img' alt='${v.Model}'/>`;
+    html += `<p><strong>Kategori:</strong> ${v.kategori}</p>`;
+    html += `<p><strong>Merke:</strong> ${v.brand}</p>`;
+    html += `<h3>Eksponering og tiltak</h3>`;
+    html += `<table class='eksponering-tabell'><thead><tr><th>Min</th><th>Vibrasjon</th><th>Støy</th><th>Eksponering</th><th>Tiltak</th></tr></thead><tbody>`;
+
+    [1,5,10,30,60].forEach(min => {
+      const [eksponering, farge] = vurderTiltak(vibrasjon, min);
+      html += `<tr class='${farge}'><td>${min}</td><td>${vibrasjon.toFixed(2)} m/s²</td><td>${støy}</td><td>${eksponering}</td><td>${farge}</td></tr>`;
+    });
+
+    html += `</tbody></table>`;
+    html += `<button onclick='leggTilIDagslogg(v, ${vibrasjon}**2)'>Legg til i dagens eksponering</button>`;
+    html += visVerneutstyr(farge);
+    toolInfo.innerHTML = html;
+  }
+}
+
+loadData();
+</script>
+
+</body>
+</html>
