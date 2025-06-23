@@ -69,10 +69,7 @@
       });
 
       
-      const categorySelect = document.getElementById('categoryFilter');
-      const brandSelect = document.getElementById('brandFilter');
-
-      const unikeKategorier = [...new Set(verktøyListe.map(v => v.kategori))];
+      const categorySelect = document.getElementById('categoryFilter');const unikeKategorier = [...new Set(verktøyListe.map(v => v.kategori))];
       unikeKategorier.forEach(kat => {
         const opt = document.createElement('option');
         opt.value = kat;
@@ -92,12 +89,7 @@
             select.appendChild(option);
           }
         });
-      });
-
-      
-      const brandSelect = document.getElementById('brandFilter');
-
-      const unikeMerker = [...new Set(verktøyListe.map(v => v.brand))];
+      });const unikeMerker = [...new Set(verktøyListe.map(v => v.brand))];
       unikeMerker.forEach(merke => {
         const opt = document.createElement('option');
         opt.value = merke;
