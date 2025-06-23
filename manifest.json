@@ -1,9 +1,9 @@
 {
-  "name": "Støy og Vibrasjonsassistent",
-  "short_name": "Assistent",
+  "name": "St\u00f8y og vibrasjonsassistent",
+  "short_name": "St\u00f8yAssistent",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#1f2937",
   "theme_color": "#1f2937",
   "icons": [
     {

@@ -1,141 +1,85 @@
 <!DOCTYPE html>
 <html lang="no">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Støy og Vibrasjonsassistent</title>
-  <script>
-    tailwind = { config: { darkMode: 'class' } };
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icon-192.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bravida Vibrasjonsassistent</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 1rem; }
+    .tool-img { max-height: 150px; margin-top: 1rem; }
+    .eksponering-tabell td, .eksponering-tabell th { padding: 6px; border: 1px solid #ccc; text-align: center; }
+    .Grønn { background-color: #d4edda; }
+    .Gul { background-color: #fff3cd; }
+    .Rød { background-color: #f8d7da; }
+  </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
-  <header class="bg-white dark:bg-gray-800 p-4 shadow-md flex justify-between items-center">
-    <div class="flex items-center gap-4">
-      <img src="bravida_logo.png" alt="Bravida" class="h-10">
-      <h1 class="text-xl font-bold">Støy & Vibrasjonsassistent</h1>
-    </div>
-  </header>
+<body>
+  <img src="bravida logo-400x119.png" alt="Bravida logo" style="max-width: 200px;"/>
+  <h1>Vibrasjonsassistent</h1>
 
-  <main class="p-6 max-w-5xl mx-auto grid gap-6 grid-cols-1 md:grid-cols-2">
-    <section class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 transition-all duration-300">
-      <label class="block font-medium mb-1">Merke</label>
-      <select id="brand" class="w-full p-2 border rounded dark:bg-gray-700 mb-4"></select>
+  <label for="toolSelect">Velg verktøy:</label>
+  <select id="toolSelect">
+    <option disabled selected>-- Velg et verktøy --</option>
+  </select>
 
-      <label class="block font-medium mb-1">Modell</label>
-      <select id="model" class="w-full p-2 border rounded dark:bg-gray-700 mb-4"></select>
-
-      <label class="block font-medium mb-1">Brukstid (minutter)</label>
-      <input type="number" id="usage" placeholder="Minutter" class="w-full p-2 border rounded dark:bg-gray-700 mb-4" />
-
-      <button id="calcBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white p-2 rounded font-semibold">Beregn</button>
-    </section>
-
-    <section class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 transition-all duration-300">
-      <h2 class="text-lg font-semibold mb-4">Resultat</h2>
-      <div id="result" class="space-y-4"></div>
-    </section>
-  </main>
-
-  <section class="p-6 max-w-5xl mx-auto">
-    <h2 class="text-lg font-semibold mb-2">Verktøybilde</h2>
-    <div id="toolImage" class="h-60 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center overflow-hidden">
-      <span class="text-gray-500">Ingen modell valgt</span>
-    </div>
-  </section>
-
-  <footer class="text-center text-sm text-gray-600 dark:text-gray-400 p-4 border-t dark:border-gray-700">
-    © Bravida Norge AS
-  </footer>
+  <div id="toolInfo"></div>
 
   <script>
-    const data = {"Milwaukee": [{"Model": "M18 FDDS", "Støy": "106,78 dB", "Vibrasjon": "1,85 m/s2"}, {"Model": "M18 FBS85", "Støy": "93,63 dB", "Vibrasjon": "1,5 m/s2"}, {"Model": "M18 CAG125XPDB", "Støy": "93,6 dB", "Vibrasjon": "4,79 m/s2"}, {"Model": "M18 FMS254", "Støy": "101,5 dB", "Vibrasjon": ""}, {"Model": "M18 FH-OX", "Støy": "103,6 dB", "Vibrasjon": "17 m/s2"}, {"Model": "M18 FMTIW2F12-502X", "Støy": "106,4 dB", "Vibrasjon": "17,4 m/s2"}, {"Model": "M18 FMTIW2P12-50X", "Støy": "106,4 dB", "Vibrasjon": "17,3 m/s2"}, {"Model": "M18 FQID", "Støy": "98,9 dB", "Vibrasjon": "19,4 m/s2"}, {"Model": "M18 FHZ", "Støy": "95,7 dB", "Vibrasjon": "8,3 m/s2"}, {"Model": "M18 FMCS-0X", "Støy": "109,1 dB", "Vibrasjon": "2,37 m/s2"}, {"Model": "M18 ONEFHXDEL-552C", "Støy": "103,6 dB", "Vibrasjon": "14,2 m/s2"}, {"Model": "M18 CBLPD", "Støy": "104,8 dB", "Vibrasjon": "12,4 m/s2"}, {"Model": "C12 MT-402B", "Støy": "86,5 dB", "Vibrasjon": "8,7 m/s2"}, {"Model": "M12 FIWF12-422X", "Støy": "107,82 dB", "Vibrasjon": "17,24 m/s2"}, {"Model": "M12 BD", "Støy": "96 dB", "Vibrasjon": "1,5 m/s2"}, {"Model": "M12 FDD2-602X", "Støy": "85,8 dB", "Vibrasjon": "1,92 m/s2"}], "Hilti": [{"Model": "TE-50-AVR", "Støy": "108 dB", "Vibrasjon": "9 m/s2"}, {"Model": "Te30-a36", "Støy": "99 dB", "Vibrasjon": "10,6 m/s2"}, {"Model": "TE 6-A22 DRS", "Støy": "100 dB", "Vibrasjon": "13,4 m/s2"}], "Panasonic": [{"Model": "EY78A1", "Støy": "95 dB", "Vibrasjon": "11 m/s2"}]};
+    async function loadTools() {
+      const response = await fetch('data.json');
+      const data = await response.json();
+      const select = document.getElementById('toolSelect');
+      const verktøyListe = [];
 
-    const brandEl = document.getElementById("brand"),
-          modelEl = document.getElementById("model"),
-          usageEl = document.getElementById("usage"),
-          resultEl= document.getElementById("result"),
-          imageEl = document.getElementById("toolImage"),
-          calcBtn = document.getElementById("calcBtn");
+      Object.entries(data).forEach(([kategori, items]) => {
+        items.forEach(verktøy => {
+          verktøy.kategori = kategori;
+          verktøyListe.push(verktøy);
+          const option = document.createElement('option');
+          option.value = verktøy.Model;
+          option.textContent = `${verktøy.Model} (${kategori})`;
+          select.appendChild(option);
+        });
+      });
 
-    function populateBrands() {
-      brandEl.innerHTML = '<option value="">Velg merke…</option>';
-      Object.keys(data).forEach(b => {
-        brandEl.innerHTML += `<option value="${b}">${b}</option>`;
+      select.addEventListener('change', (e) => {
+        const valgt = verktøyListe.find(v => v.Model === e.target.value);
+        visVerktøy(valgt);
       });
     }
 
-    brandEl.onchange = () => {
-      modelEl.innerHTML = '<option value="">Velg modell…</option>';
-      (data[brandEl.value] || []).forEach(m => {
-        modelEl.innerHTML += `<option value="${m.Model}">${m.Model}</option>`;
+    function vurderTiltak(v, min) {
+      if (!v || isNaN(v)) return ['-', ''];
+      const t = min / 60;
+      const e = (v * Math.sqrt(t)) ** 2;
+      if (e < 6.25) return [e.toFixed(2), 'Grønn'];
+      else if (e < 25) return [e.toFixed(2), 'Gul'];
+      else return [e.toFixed(2), 'Rød'];
+    }
+
+    function visVerktøy(v) {
+      const info = document.getElementById('toolInfo');
+      const vibrasjon = parseFloat((v.Vibrasjon || "0").replace(',', '.'));
+      const støy = v.Støy || "-";
+
+      let html = `<h2>${v.Model}</h2>`;
+      html += `<img src='bilder/${v.Model}.jpg' class='tool-img' alt='${v.Model}'/>`;
+      html += `<p><strong>Kategori:</strong> ${v.kategori}</p>`;
+      html += `<p><strong>Vibrasjon:</strong> ${vibrasjon} m/s²</p>`;
+      html += `<p><strong>Støy:</strong> ${støy}</p>`;
+      html += `<h3>Eksponering og tiltak</h3>`;
+      html += `<table class='eksponering-tabell'><thead><tr><th>Minutt</th><th>Eksponering</th><th>Tiltak</th></tr></thead><tbody>`;
+
+      [1,5,10,30,60].forEach(min => {
+        const [e, farge] = vurderTiltak(vibrasjon, min);
+        html += `<tr class='${farge}'><td>${min}</td><td>${e}</td><td>${farge}</td></tr>`;
       });
-      resultEl.innerHTML = '';
-      imageEl.innerHTML = '<span class="text-gray-500">Ingen modell valgt</span>';
-    };
 
-    modelEl.onchange = () => {
-      const model = modelEl.value;
-      const img = new Image();
-      img.src = `bilder/${encodeURIComponent(model)}.jpg`;
-      img.onerror = () => {
-        img.src = `https://via.placeholder.com/400x200?text=${encodeURIComponent(model)}`;
-      };
-      img.className = 'object-contain h-full';
-      imageEl.innerHTML = '';
-      imageEl.append(img);
-    };
+      html += `</tbody></table>`;
+      info.innerHTML = html;
+    }
 
-    calcBtn.onclick = () => {
-      const brand = brandEl.value;
-      const model = modelEl.value;
-      const usage = parseFloat(usageEl.value);
-
-      if (!brand || !model || isNaN(usage)) {
-        resultEl.innerHTML = '<p class="text-red-600">Fyll ut alle feltene.</p>';
-        return;
-      }
-
-      const tool = data[brand].find(m => m.Model === model);
-      const noise = parseFloat(tool.Støy.replace(',', '.'));
-      const vibration = parseFloat(tool.Vibrasjon.replace(',', '.'));
-      const vibScore = (vibration * Math.sqrt(usage / 60)).toFixed(2);
-
-      const overNoise = noise > 85;
-      const overVib = vibration > 10;
-
-      resultEl.innerHTML = `
-        <p><strong>Merke:</strong> ${brand}</p>
-        <p><strong>Modell:</strong> ${model}</p>
-        <p><strong>Brukstid:</strong> ${usage} minutter</p>
-        <p><strong>Støy:</strong> ${noise} dB ${overNoise ? '⚠️' : ''}</p>
-        <p><strong>Vibrasjon (A(8)):</strong> ${vibScore} m/s² ${overVib ? '⚠️' : ''}</p>
-        ${overNoise ? `
-          <div class="mt-4 p-4 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 rounded shadow-lg ring-2 ring-red-300 dark:ring-red-500 animate-pulse">
-            <h3 class="font-bold">Tiltak ved høy støy:</h3>
-            <ul class="list-disc pl-5">
-              <li>Bruk hørselsvern</li>
-              <li>Begrens eksponering</li>
-              <li>Ta pauser</li>
-            </ul>
-          </div>` : ''}
-        ${overVib ? `
-          <div class="mt-4 p-4 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 rounded shadow-lg ring-2 ring-red-300 dark:ring-red-500 animate-pulse">
-            <h3 class="font-bold">Tiltak ved høy vibrasjon:</h3>
-            <ul class="list-disc pl-5">
-              <li>Bruk vibrasjonsdempende hansker</li>
-              <li>Begrens brukstid</li>
-              <li>Ta pauser</li>
-            </ul>
-          </div>` : ''}
-      `;
-    };
-
-    window.onload = () => {
-      populateBrands();
-    };
+    loadTools();
   </script>
 </body>
 </html>
