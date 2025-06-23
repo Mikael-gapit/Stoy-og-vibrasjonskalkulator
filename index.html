@@ -69,7 +69,7 @@
       });
 
       
-      const categorySelect = document.getElementById('categoryFilter');const unikeKategorier = [...new Set(verktøyListe.map(v => v.kategori))];
+      const categorySelect = document.getElementById('categoryFilter');const unikeKategorier = [...new Set(verktøyListe.map(v => v.Kategori))];
       unikeKategorier.forEach(kat => {
         const opt = document.createElement('option');
         opt.value = kat;
@@ -82,10 +82,10 @@
     const valgtMerke = brandSelect.value;
         select.innerHTML = '<option disabled selected>-- Velg et verktøy --</option>';
         verktøyListe.forEach(v => {
-          if (valgtKategori === 'alle' || v.kategori === valgtKategori) {
+          if (valgtKategori === 'alle' || v.Kategori === valgtKategori) {
             const option = document.createElement('option');
             option.value = v.Model;
-            option.textContent = `${v.Model} (${v.kategori})`;
+            option.textContent = `${v.Model} (${v.Kategori})`;
             select.appendChild(option);
           }
         });
@@ -104,12 +104,12 @@
         select.innerHTML = '<option disabled selected>-- Velg et verktøy --</option>';
         verktøyListe.forEach(v => {
           if (
-            (valgtKategori === 'alle' || v.kategori === valgtKategori) &&
+            (valgtKategori === 'alle' || v.Kategori === valgtKategori) &&
             (valgtMerke === 'alle' || v.brand === valgtMerke)
           ) {
             const option = document.createElement('option');
             option.value = v.Model;
-            option.textContent = `${v.Model} (${v.kategori})`;
+            option.textContent = `${v.Model} (${v.Kategori})`;
             select.appendChild(option);
           }
         });
@@ -140,7 +140,7 @@
 
       let html = `<h2>${v.Model}</h2>`;
       html += `<img src='bilder/${v.Model}.jpg' class='tool-img' alt='${v.Model}'/>`;
-      html += `<p><strong>Kategori:</strong> ${v.kategori}</p>`;
+      html += `<p><strong>Kategori:</strong> ${v.Kategori}</p>`;
       html += `<p><strong>Vibrasjon:</strong> ${vibrasjon} m/s²</p>`;
       html += `<p><strong>Støy:</strong> ${støy}</p>`;
       html += `<h3>Eksponering og tiltak</h3>`;
