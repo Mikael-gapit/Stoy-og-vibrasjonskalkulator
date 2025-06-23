@@ -107,12 +107,13 @@
       html += `<h3>Eksponering og tiltak</h3>`;
       html += `<table class='eksponering-tabell'><thead><tr><th>Minutt</th><th>Eksponering</th><th>Tiltak</th></tr></thead><tbody>`;
 
-      [1,5,10,30,60].forEach(min => {
-        const [e, farge] = vurderTiltak(vibrasjon, min);
-        html += `<tr class='${farge}'><td>${min}</td><td>${e}</td><td>${farge}</td></tr>`;
-      });
+      
+        [1,5,10,30,60].forEach(min => {
+          const [e, farge] = vurderTiltak(vibrasjon, min);
+          const tiltaktekst = (v.Tiltak && v.Tiltak[farge]) ? v.Tiltak[farge] : '';
+          html += `<tr class='${farge}'><td>${min}</td><td>${e}</td><td>${farge}<br><small>${tiltaktekst}</small></td></tr>`;
+        });
 
-      html += `</tbody></table>`;
       info.innerHTML = html;
     }
 
