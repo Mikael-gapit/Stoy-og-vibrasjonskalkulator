@@ -72,7 +72,7 @@
 
       
       const categorySelect = document.getElementById('categoryFilter');
-
+      
       const unikeKategorier = [...new Set(verktøyListe.map(v => v.kategori))];
       unikeKategorier.forEach(kat => {
         const opt = document.createElement('option');
@@ -96,8 +96,7 @@
       });
 
       
-      const brandSelect = document.getElementById('brandFilter');
-
+      
       const unikeMerker = [...new Set(verktøyListe.map(v => v.brand))];
       unikeMerker.forEach(merke => {
         const opt = document.createElement('option');
@@ -109,7 +108,6 @@
       function oppdaterVerktøyliste() {
         const valgtKategori = categorySelect.value;
     const valgtMerke = brandSelect.value;
-        const valgtMerke = brandSelect.value;
         select.innerHTML = '<option disabled selected>-- Velg et verktøy --</option>';
         verktøyListe.forEach(v => {
           if (
