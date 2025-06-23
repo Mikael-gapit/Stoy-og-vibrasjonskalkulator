@@ -61,8 +61,7 @@
       Object.entries(data).forEach(([kategori, items]) => {
         items.forEach(verktøy => {
           verktøy.kategori = kategori;
-          verktøy.brand = kategori;
-          verktøyListe.push(verktøy);
+                    verktøyListe.push(verktøy);
           const option = document.createElement('option');
           option.value = verktøy.Model;
           option.textContent = `${verktøy.Model} (${kategori})`;
