@@ -83,6 +83,7 @@
 
       categorySelect.addEventListener('change', () => {
         const valgtKategori = categorySelect.value;
+    const valgtMerke = brandSelect.value;
         select.innerHTML = '<option disabled selected>-- Velg et verktøy --</option>';
         verktøyListe.forEach(v => {
           if (valgtKategori === 'alle' || v.kategori === valgtKategori) {
@@ -107,6 +108,7 @@
 
       function oppdaterVerktøyliste() {
         const valgtKategori = categorySelect.value;
+    const valgtMerke = brandSelect.value;
         const valgtMerke = brandSelect.value;
         select.innerHTML = '<option disabled selected>-- Velg et verktøy --</option>';
         verktøyListe.forEach(v => {
@@ -145,7 +147,7 @@
       const vibrasjon = parseFloat((v.Vibrasjon || "0").replace(',', '.'));
       const støy = v.Støy || "-";
 
-      let html = `<h2>${v.Model}</h2><img src='bilder/${v.Model}.jpg' alt='${v.Model}' style='max-height:150px;margin:10px 0;'>`;
+      let html = `<h2>${v.Model}</h2>`;
       html += `<img src='bilder/${v.Model}.jpg' class='tool-img' alt='${v.Model}'/>`;
       html += `<p><strong>Kategori:</strong> ${v.kategori}</p>`;
       html += `<p><strong>Vibrasjon:</strong> ${vibrasjon} m/s²</p>`;
