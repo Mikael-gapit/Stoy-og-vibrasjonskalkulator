@@ -55,7 +55,7 @@
     async function loadTools() {
       const response = await fetch('./data.json');
       const data = await response.json();
-      const select = document.getElementById('toolSelect');
+      const select = document.getElementById('toolSelect');const categorySelect = document.getElementById('categoryFilter');
       const verktøyListe = [];
 
       Object.entries(data).forEach(([kategori, items]) => {
