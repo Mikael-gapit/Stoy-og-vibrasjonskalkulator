@@ -158,7 +158,36 @@
   </div>
 
 </div>
+<div class="box">
+  <h2>ℹ️ Forklaring og tiltak</h2>
+  <p>Eksponeringskalkulatoren lar deg legge til verktøy og minutter brukt. Den beregner eksponering og gir visuell tilbakemelding basert på nivået.</p>
 
+  <table class="eksponering-tabell">
+    <thead>
+      <tr><th>Nivå</th><th>Eksponeringsverdi</th><th>Risiko</th><th>Typiske tiltak</th></tr>
+    </thead>
+    <tbody>
+      <tr class="Grønn">
+        <td>Grønn</td>
+        <td>&lt; 6,25</td>
+        <td>Lav</td>
+        <td>Ingen tiltak nødvendig</td>
+      </tr>
+      <tr class="Gul">
+        <td>Gul</td>
+        <td>6,25 – 25</td>
+        <td>Moderat</td>
+        <td>Ta pauser, roter oppgaver, bruk lavvibrasjonsverktøy</td>
+      </tr>
+      <tr class="Rød">
+        <td>Rød</td>
+        <td>&ge; 25</td>
+        <td>Høy</td>
+        <td>Stans arbeid, bytt verktøy, planlegg alternative løsninger</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 <script>
   let verktøyListe = [];
   let valgtVerktøy = null;
