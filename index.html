@@ -25,7 +25,6 @@
       margin: auto;
     }
     h1, h2, h3 { color: var(--sekundær); }
-
     header {
       display: flex;
       align-items: center;
@@ -40,13 +39,11 @@
       color: var(--primær);
       font-size: 1.1rem;
     }
-
     .flex-container {
       display: flex;
       gap: 2rem;
       flex-wrap: wrap;
     }
-
     .box {
       background: var(--hvit);
       padding: 1rem;
@@ -54,7 +51,6 @@
       flex: 1 1 48%;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-
     select, input, button {
       padding: 6px;
       font-size: 1rem;
@@ -63,39 +59,32 @@
       border: 1px solid #aaa;
       width: 100%;
     }
-
     button {
       background: var(--primær);
       color: white;
       border: none;
       cursor: pointer;
     }
-
     button:hover { background: #0056b3; }
-
     .eksponering-tabell {
       width: 100%;
       border-collapse: collapse;
       margin-top: 1rem;
       background: var(--hvit);
     }
-
     .eksponering-tabell th, .eksponering-tabell td {
       color: #000;
       border: 1px solid #ccc;
       padding: 8px;
       text-align: center;
     }
-
     .eksponering-tabell th {
       background: var(--primær);
       color: white;
     }
-
     .Grønn { background-color: var(--grønn); }
     .Gul { background-color: var(--gul); }
     .Rød { background-color: var(--rød); }
-
     .tool-img {
       max-height: 150px;
       margin-top: 1rem;
@@ -103,7 +92,6 @@
   </style>
 </head>
 <body>
-
 <header>
   <img src="bravida logo-400x119.png" alt="Bravida logo" style="max-height: 50px; margin-right: 1rem;" />
   <nav>
@@ -112,206 +100,134 @@
     <a href="tips.html">💡 Tips</a>
   </nav>
 </header>
-
 <div class="flex-container">
-
-  <!-- Vibrasjonsassistent -->
   <div class="box">
     <h2>🔧 Vibrasjonsassistent</h2>
-
     <label for="brandFilter">Filtrer etter merke:</label>
     <select id="brandFilter"><option value="alle" selected>Alle merker</option></select>
-
     <label for="categoryFilter">Filtrer etter kategori:</label>
     <select id="categoryFilter"><option value="alle" selected>Alle kategorier</option></select>
-
     <label for="toolSelect">Velg verktøy:</label>
     <select id="toolSelect"><option disabled selected>-- Velg et verktøy --</option></select>
-
     <div id="toolInfo"></div>
   </div>
-
-  <!-- Kalkulator -->
   <div class="box">
     <h2>📊 Eksponeringskalkulator</h2>
-
     <label for="calcMin">Minutter brukt:</label>
     <input type="number" id="calcMin" min="1" max="480" value="10" />
     <button onclick="leggTilVerktoy()">Legg til</button>
     <button onclick="resetKalk()">Reset</button>
-
     <table class="eksponering-tabell" id="calcTable" style="display:none;">
       <thead>
         <tr><th>Verktøy</th><th>Minutter</th><th>Vibrasjon</th><th>Eksponering</th></tr>
       </thead>
       <tbody id="calcBody"></tbody>
       <tfoot>
-        <tr>
-          <th>Total</th>
-          <th id="totalMinutter">0</th>
-          <th></th>
-          <th id="calcTotal">0.00</th>
-        </tr>
+        <tr><th>Total</th><th id="totalMinutter">0</th><th></th><th id="calcTotal">0.00</th></tr>
       </tfoot>
     </table>
     <div id="calcAdvarsel" style="padding: 1rem; margin-top: 1rem;"></div>
   </div>
-
+  <div class="box">
+    <h2 style="margin-bottom: 0;">ℹ️ Forklaring og tiltak</h2>
+    <button onclick="toggleForklaring()" id="forklaringBtn" style="margin-top: 0.5rem; margin-bottom: 1rem;">Vis forklaring</button>
+    <div id="forklaringInnhold" style="display:none;">
+      <p>Eksponeringskalkulatoren lar deg legge til verktøy og minutter brukt. Den beregner eksponering og gir visuell tilbakemelding basert på nivået.</p>
+      <table class="eksponering-tabell">
+        <thead><tr><th>Nivå</th><th>Eksponeringsverdi</th><th>Risiko</th><th>Typiske tiltak</th></tr></thead>
+        <tbody>
+          <tr class="Grønn"><td>🟢 Grønn</td><td>&lt; 6,25</td><td>Lav</td><td>Ingen tiltak nødvendig</td></tr>
+          <tr class="Gul"><td>🟡 Gul</td><td>6,25 – 25</td><td>Moderat</td><td>Ta pauser, roter oppgaver, bruk lavvibrasjonsverktøy</td></tr>
+          <tr class="Rød"><td>🔴 Rød</td><td>&ge; 25</td><td>Høy</td><td>Stans arbeid, bytt verktøy, planlegg alternative løsninger</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
-  
-<div class="box">
-  <h2>ℹ️ Forklaring og tiltak</h2>
-  <p>Eksponeringskalkulatoren lar deg legge til verktøy og minutter brukt. Den beregner eksponering og gir visuell tilbakemelding basert på nivået.</p>
-
-  <table class="eksponering-tabell">
-    <thead>
-      <tr><th>Nivå</th><th>Eksponeringsverdi</th><th>Risiko</th><th>Typiske tiltak</th></tr>
-    </thead>
-    <tbody>
-      <tr class="Grønn">
-        <td>Grønn</td>
-        <td>&lt; 6,25</td>
-        <td>Lav</td>
-        <td>Ingen tiltak nødvendig</td>
-      </tr>
-      <tr class="Gul">
-        <td>Gul</td>
-        <td>6,25 – 25</td>
-        <td>Moderat</td>
-        <td>Ta pauser, roter oppgaver, bruk lavvibrasjonsverktøy</td>
-      </tr>
-      <tr class="Rød">
-        <td>Rød</td>
-        <td>&ge; 25</td>
-        <td>Høy</td>
-        <td>Stans arbeid, bytt verktøy, planlegg alternative løsninger</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-  
 <script>
-  let verktøyListe = [];
-  let valgtVerktøy = null;
-
+  let verktøyListe = [], valgtVerktøy = null;
   async function loadTools() {
     const response = await fetch('./data.json');
     const data = await response.json();
     verktøyListe = Object.values(data).flat();
-
     const brandFilter = document.getElementById('brandFilter');
     const categoryFilter = document.getElementById('categoryFilter');
     const toolSelect = document.getElementById('toolSelect');
-
     const unikeMerker = [...new Set(verktøyListe.map(v => v.brand))];
-    unikeMerker.forEach(merke => {
-      const opt = document.createElement('option');
-      opt.value = merke;
-      opt.textContent = merke;
-      brandFilter.appendChild(opt);
-    });
-
     const unikeKategorier = [...new Set(verktøyListe.map(v => v.Kategori))];
-    unikeKategorier.forEach(kat => {
-      const opt = document.createElement('option');
-      opt.value = kat;
-      opt.textContent = kat;
-      categoryFilter.appendChild(opt);
-    });
-
+    unikeMerker.forEach(m => { let o = new Option(m, m); brandFilter.add(o); });
+    unikeKategorier.forEach(k => { let o = new Option(k, k); categoryFilter.add(o); });
     function oppdaterVerktøyliste() {
-      const valgtMerke = brandFilter.value;
-      const valgtKategori = categoryFilter.value;
+      const valgtMerke = brandFilter.value, valgtKategori = categoryFilter.value;
       toolSelect.innerHTML = '<option disabled selected>-- Velg et verktøy --</option>';
       verktøyListe.forEach(v => {
         if ((valgtMerke === 'alle' || v.brand === valgtMerke) &&
             (valgtKategori === 'alle' || v.Kategori === valgtKategori)) {
-          const option = document.createElement('option');
-          option.value = v.Model;
-          option.textContent = `${v.Model} (${v.Kategori})`;
-          toolSelect.appendChild(option);
+          const option = new Option(`${v.Model} (${v.Kategori})`, v.Model);
+          toolSelect.add(option);
         }
       });
     }
-
-    brandFilter.addEventListener('change', oppdaterVerktøyliste);
-    categoryFilter.addEventListener('change', oppdaterVerktøyliste);
-    toolSelect.addEventListener('change', (e) => {
+    brandFilter.onchange = oppdaterVerktøyliste;
+    categoryFilter.onchange = oppdaterVerktøyliste;
+    toolSelect.onchange = e => {
       valgtVerktøy = verktøyListe.find(v => v.Model === e.target.value);
       visVerktøy(valgtVerktøy);
-    });
-
+    };
     oppdaterVerktøyliste();
   }
-
-  function vurderTiltak(v, min) {
-    if (!v || isNaN(v)) return ['-', ''];
-    const t = min / 60;
-    const e = (v * Math.sqrt(t)) ** 2;
-    if (e < 6.25) return [e.toFixed(2), 'Grønn'];
-    else if (e < 25) return [e.toFixed(2), 'Gul'];
-    else return [e.toFixed(2), 'Rød'];
-  }
-
   function visVerktøy(v) {
     const info = document.getElementById('toolInfo');
     const vibrasjon = parseFloat((v.Vibrasjon || "0").replace(',', '.'));
-    const støy = v.Støy || "-";
-
     let html = `<h3>${v.Model}</h3>`;
     html += `<img src='bilder/${v.Model}.jpg' class='tool-img' alt='${v.Model}'/>`;
     html += `<p><strong>Kategori:</strong> ${v.Kategori}</p>`;
     html += `<p><strong>Merke:</strong> ${v.brand}</p>`;
     html += `<p><strong>Vibrasjon:</strong> ${vibrasjon} m/s²</p>`;
-    html += `<p><strong>Støy:</strong> ${støy}</p>`;
+    html += `<p><strong>Støy:</strong> ${v.Støy || '-'}</p>`;
     info.innerHTML = html;
   }
-
   function leggTilVerktoy() {
     const min = parseFloat(document.getElementById('calcMin').value);
     if (!valgtVerktøy || isNaN(min)) return;
-
     const vibrasjon = parseFloat((valgtVerktøy.Vibrasjon || "0").replace(',', '.'));
-    const t = min / 60;
-    const e = (vibrasjon * Math.sqrt(t)) ** 2;
-
+    const t = min / 60, e = (vibrasjon * Math.sqrt(t)) ** 2;
     const rad = `<tr><td>${valgtVerktøy.Model}</td><td>${min}</td><td>${vibrasjon} m/s²</td><td>${e.toFixed(2)}</td></tr>`;
     document.getElementById('calcBody').insertAdjacentHTML('beforeend', rad);
     document.getElementById('calcTable').style.display = '';
     summerEksponering();
   }
-
   function summerEksponering() {
     const rader = document.querySelectorAll('#calcBody tr');
-    let totalE = 0;
-    let totalMin = 0;
+    let totalE = 0, totalMin = 0;
     rader.forEach(row => {
       const min = parseFloat(row.children[1].textContent);
       const e = parseFloat(row.children[3].textContent);
       if (!isNaN(e)) totalE += e;
       if (!isNaN(min)) totalMin += min;
     });
-
     document.getElementById('calcTotal').textContent = totalE.toFixed(2);
     document.getElementById('totalMinutter').textContent = totalMin;
-
     let nivå = '';
     if (totalE < 6.25) nivå = '<span class="Grønn">Grønn – Ingen tiltak nødvendig</span>';
     else if (totalE < 25) nivå = '<span class="Gul">Gul – Vurder tiltak</span>';
     else nivå = '<span class="Rød">Rød – Høy helserisiko</span>';
-
     document.getElementById('calcAdvarsel').innerHTML = `<p><strong>Totalt eksponeringsnivå:</strong> ${nivå}</p>`;
   }
-
   function resetKalk() {
     document.getElementById('calcBody').innerHTML = '';
     document.getElementById('calcTable').style.display = 'none';
     document.getElementById('calcAdvarsel').innerHTML = '';
     document.getElementById('totalMinutter').textContent = '0';
   }
-
+  function toggleForklaring() {
+    const innhold = document.getElementById("forklaringInnhold");
+    const knapp = document.getElementById("forklaringBtn");
+    const erSynlig = innhold.style.display === "block";
+    innhold.style.display = erSynlig ? "none" : "block";
+    knapp.textContent = erSynlig ? "Vis forklaring" : "Skjul forklaring";
+  }
   loadTools();
 </script>
-
 </body>
 </html>
